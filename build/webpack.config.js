@@ -7,8 +7,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 打包css
 module.exports = {
     mode: 'development',
     entry: {
-        index: path.resolve(__dirname, '../src/index.js'),
-        header: path.resolve(__dirname, '../src/header.js')
+        index: ['@babel/polyfill', path.resolve(__dirname, '../src/index.js')],
+        header: ['@babel/polyfill', path.resolve(__dirname, '../src/header.js')]
     },
     output: {
         filename: '[name].[fullhash:8].js',
@@ -92,6 +92,16 @@ module.exports = {
                         }
                     }
                 ]
+            },
+            {
+                test: /\.js$/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                },
+                exclude: /node_modules/
             }
         ]
     },
