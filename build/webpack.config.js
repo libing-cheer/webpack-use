@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin'); // html模版引擎
 const {CleanWebpackPlugin} = require('clean-webpack-plugin'); // 清除文件
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 打包css
-
+const {VueLoaderPlugin} = require('vue-loader'); // 解析vue文件
 
 module.exports = {
     mode: 'development',
@@ -30,8 +30,16 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: "[name].[fullhash].css",
             chunkFilename: "[id].css",
-        })
+        }),
+        new VueLoaderPlugin()
     ],
+    resolve: {
+        alias: {
+            'vue$': 'vue/dist/vue.runtime.esm.js',
+            '@': path.resolve(__dirname, '../src')
+        },
+        extensions: ['*', '.js', '.json', '.vue']
+    },
     module: {
         rules: [
             {
@@ -102,6 +110,10 @@ module.exports = {
                     }
                 },
                 exclude: /node_modules/
+            },
+            {
+                test: /\.vue$/,
+                use: ['vue-loader'] // vue模版
             }
         ]
     },
