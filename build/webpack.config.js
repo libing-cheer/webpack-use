@@ -2,7 +2,9 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin'); // html模版引擎
 const {CleanWebpackPlugin} = require('clean-webpack-plugin'); // 清除文件
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 打包css
+const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin'); // 拆分css
 const {VueLoaderPlugin} = require('vue-loader'); // 解析vue文件
+const Webpack = require('webpack');
 
 module.exports = {
     mode: 'development',
@@ -13,6 +15,14 @@ module.exports = {
     output: {
         filename: '[name].[fullhash:8].js',
         path: path.resolve(__dirname, '../dist')
+    },
+    // output的publicPath是用来给生成的静态资源路径添加前缀的；
+    // devServer中的publicPath是用来本地服务拦截带publicPath开头的请求的；
+    // contentBase是用来指定被访问html页面所在目录的；
+    devServer: {
+        port: 8888,
+        hot: true,
+        contentBase: '../dist' // 页面所在的相对目录
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -31,7 +41,8 @@ module.exports = {
             filename: "[name].[fullhash].css",
             chunkFilename: "[id].css",
         }),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new Webpack.HotModuleReplacementPlugin()
     ],
     resolve: {
         alias: {
@@ -44,11 +55,30 @@ module.exports = {
         rules: [
             {
                 test: /\.css$/,
-                use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'] // // 从右向左解析原则
+                use: ['vue-style-loader', 'css-loader', {
+                    loader: 'postcss-loader',
+                    options: {
+                        postcssOptions: {
+                            plugins: [
+                                [require('autoprefixer')]
+                            ]
+                        }
+                    },
+
+                }] // // 从右向左解析原则
             },
             {
                 test: /\.less$/,
-                use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'less-loader']
+                use: ['vue-style-loader', 'css-loader', {
+                    loader: 'postcss-loader',
+                    options: {
+                        postcssOptions: {
+                            plugins: [
+                                [require('autoprefixer')]
+                            ]
+                        }
+                    }
+                }, 'less-loader']
             },
             {
                 test: /\.(jpe?g|png|gif)$/i, // 图片文件
@@ -86,7 +116,7 @@ module.exports = {
             },
             {
                 test: /\.(woff2?|eot|ttf)$(\?.*)?$/i, // 字体
-                use:[
+                use: [
                     {
                         loader: 'url-loader',
                         options: {
