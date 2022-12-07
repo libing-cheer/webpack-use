@@ -1,3 +1,5 @@
  body {
-     background: #1fa4f7;
+     background-image: url("../assets/img/IMG_0178.PNG");
+     background-repeat: no-repeat;
+     background-size: contain;
  }
