@@ -22,7 +22,7 @@ module.exports = {
     devServer: {
         port: 8888,
         hot: true,
-        contentBase: '../dist' // 页面所在的相对目录
+        static: path.resolve(__dirname, 'dist') // 页面所在的相对目录
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -46,7 +46,6 @@ module.exports = {
     ],
     resolve: {
         alias: {
-            'vue$': 'vue/dist/vue.runtime.esm.js',
             '@': path.resolve(__dirname, '../src')
         },
         extensions: ['*', '.js', '.json', '.vue']
@@ -60,7 +59,7 @@ module.exports = {
                     options: {
                         postcssOptions: {
                             plugins: [
-                                [require('autoprefixer')]
+                                require('autoprefixer')
                             ]
                         }
                     },
@@ -74,7 +73,7 @@ module.exports = {
                     options: {
                         postcssOptions: {
                             plugins: [
-                                [require('autoprefixer')]
+                                require('autoprefixer')
                             ]
                         }
                     }
@@ -87,6 +86,7 @@ module.exports = {
                         loader: 'url-loader',
                         options: {
                             limit: 10240,
+                            esModule: false,
                             fallback: {
                                 loader: 'file-loader',
                                 options: {
@@ -95,7 +95,8 @@ module.exports = {
                             }
                         }
                     }
-                ]
+                ],
+                type: 'javascript/auto'
             },
             {
                 test: /\.(mp4|webm|mp3|wav|flac|acc)(\?.*)?$/, // 媒体文件
@@ -104,6 +105,7 @@ module.exports = {
                         loader: 'url-loader',
                         options: {
                             limit: 10240,
+                            esModule: false,
                             fallback: {
                                 loader: 'file-loader',
                                 options: {
@@ -112,7 +114,8 @@ module.exports = {
                             }
                         }
                     }
-                ]
+                ],
+                type: 'javascript/auto'
             },
             {
                 test: /\.(woff2?|eot|ttf)$(\?.*)?$/i, // 字体
@@ -121,6 +124,7 @@ module.exports = {
                         loader: 'url-loader',
                         options: {
                             limit: 10240,
+                            esModule: false,
                             fallback: {
                                 loader: 'file-loader',
                                 options: {
@@ -129,7 +133,8 @@ module.exports = {
                             }
                         }
                     }
-                ]
+                ],
+                type: 'javascript/auto'
             },
             {
                 test: /\.js$/,
