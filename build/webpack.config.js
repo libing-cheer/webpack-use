@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin'); // html模版引擎
 const {CleanWebpackPlugin} = require('clean-webpack-plugin'); // 清除文件
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 打包css
@@ -45,6 +46,12 @@ module.exports = {
             chunkFilename: devMode ? "[id].css" : '[id].[fullhash].css',
         }),
         new VueLoaderPlugin(),
+        // new webpack.DllReferencePlugin({
+        //     name: '_dll_[name]',
+        //     context: __dirname,
+        //     // manifest: require('./main.manifest')
+        //     manifest: path.join(__dirname, '../dist', '[name].manifest.json')
+        // })
     ],
     resolve: {
         alias: {
