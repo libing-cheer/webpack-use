@@ -4,8 +4,13 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin'); // 清除文件
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 打包css
 // const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin'); // 拆分css
 const {VueLoaderPlugin} = require('vue-loader'); // 解析vue文件
-
+const os = require('os');
+const workers = os.cpus().length;
+const threadLoader = require('thread-loader'); // 多进程打包
 const devMode = process.argv.indexOf('--mode=production') === -1;
+
+//通过预警worker池来防止启动worker时的高延时
+threadLoader.warmup({}, ['babel-loader', 'sass-loader']);
 
 module.exports = {
     mode: 'development',
@@ -149,12 +154,24 @@ module.exports = {
             },
             {
                 test: /\.js$/,
+                //把js文件处理交给id为happyBabel的HappyPack的实例执行
                 use: {
-                    loader: 'babel-loader',
+                    // loader: 'babel-loader',
+                    // options: {
+                    //     presets: ['@babel/preset-env']
+                    // }
+                    loader: 'thread-loader',
                     options: {
-                        presets: ['@babel/preset-env']
+                        workers: workers,
+                        workerParallelJobs: 50, // 一个worker进程中并执行工作的数量
+                        workerNodeArgs: ['--max-old-space-size=1024'],
+                        poolRespawn: false, // 允许重新生成一个僵死的worker
+                        poolTimeout: 2000, // 闲置时定时删除worker进程
+                        poolParallelJobs: 50, // 池分配给worker的工作数量
+                        name: 'my-webpack-pool' // 池的名称
                     }
                 },
+                include: path.resolve('src'),
                 exclude: /node_modules/
             },
             {
