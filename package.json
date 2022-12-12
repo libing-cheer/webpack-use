@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --config build/webpack.config.js --open",
     "build": "webpack --config build/webpack.config.js",
-    "dll": "webpack --config build/webpack.dll.config.js"
+    "dll": "webpack --config build/webpack.dll.config.js",
+    "analyz": "NODE_ENV=production npm_config_report=true npm run build"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "@babel/preset-env": "^7.20.2",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^9.1.0",
+    "cache-loader": "^4.1.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.2",
@@ -53,6 +55,7 @@
     "vue-loader": "^17.0.1",
     "vue-style-loader": "^4.1.3",
     "vue-template-compiler": "^2.7.14",
+    "webpack-bundle-analyzer": "^4.7.0",
     "webpack-dev-server": "^4.11.1",
     "webpack-parallel-uglify-plugin": "^2.0.0"
   }

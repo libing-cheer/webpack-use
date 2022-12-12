@@ -8,6 +8,7 @@ const {VueLoaderPlugin} = require('vue-loader'); // 解析vue文件
 const os = require('os');
 const workers = os.cpus().length;
 const threadLoader = require('thread-loader'); // 多进程打包
+const BundleAnalyzer = require('webpack-bundle-analyzer').BundleAnalyzerPlugin; // 优化打包文件体积
 const devMode = process.argv.indexOf('--mode=production') === -1;
 
 //通过预警worker池来防止启动worker时的高延时
@@ -46,6 +47,10 @@ module.exports = {
             chunkFilename: devMode ? "[id].css" : '[id].[fullhash].css',
         }),
         new VueLoaderPlugin(),
+        new BundleAnalyzer({
+            analyzerHost: 'localhost',
+            analyzerPort: '8888'
+        })
         // new webpack.DllReferencePlugin({
         //     name: '_dll_[name]',
         //     context: __dirname,
