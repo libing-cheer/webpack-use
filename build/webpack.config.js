@@ -2,9 +2,10 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin'); // html模版引擎
 const {CleanWebpackPlugin} = require('clean-webpack-plugin'); // 清除文件
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // 打包css
-const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin'); // 拆分css
+// const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin'); // 拆分css
 const {VueLoaderPlugin} = require('vue-loader'); // 解析vue文件
-const Webpack = require('webpack');
+
+const devMode = process.argv.indexOf('--mode=production') === -1;
 
 module.exports = {
     mode: 'development',
@@ -16,9 +17,6 @@ module.exports = {
         filename: '[name].[fullhash:8].js',
         path: path.resolve(__dirname, '../dist')
     },
-    // output的publicPath是用来给生成的静态资源路径添加前缀的；
-    // devServer中的publicPath是用来本地服务拦截带publicPath开头的请求的；
-    // contentBase是用来指定被访问html页面所在目录的；
     devServer: {
         port: 8888,
         hot: true,
@@ -38,11 +36,10 @@ module.exports = {
         }),
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
-            filename: "[name].[fullhash].css",
-            chunkFilename: "[id].css",
+            filename: devMode ? '[name].css' : "[name].[fullhash].css",
+            chunkFilename: devMode ? "[id].css" : '[id].[fullhash].css',
         }),
         new VueLoaderPlugin(),
-        new Webpack.HotModuleReplacementPlugin()
     ],
     resolve: {
         alias: {
@@ -54,30 +51,44 @@ module.exports = {
         rules: [
             {
                 test: /\.css$/,
-                use: ['vue-style-loader', 'css-loader', {
-                    loader: 'postcss-loader',
-                    options: {
-                        postcssOptions: {
-                            plugins: [
-                                require('autoprefixer')
-                            ]
+                use: [
+                    {
+                        loader: devMode ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '../dist/css/'
                         }
                     },
+                    'css-loader', {
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                plugins: [
+                                    require('autoprefixer')
+                                ]
+                            }
+                        },
 
-                }] // // 从右向左解析原则
+                    }] // // 从右向左解析原则
             },
             {
                 test: /\.less$/,
-                use: ['vue-style-loader', 'css-loader', {
-                    loader: 'postcss-loader',
-                    options: {
-                        postcssOptions: {
-                            plugins: [
-                                require('autoprefixer')
-                            ]
+                use: [
+                    {
+                        loader: devMode ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '../dist/css'
                         }
-                    }
-                }, 'less-loader']
+                    },
+                    'css-loader', {
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                plugins: [
+                                    require('autoprefixer')
+                                ]
+                            }
+                        }
+                    }, 'less-loader']
             },
             {
                 test: /\.(jpe?g|png|gif)$/i, // 图片文件
