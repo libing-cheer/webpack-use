@@ -192,5 +192,12 @@ module.exports = {
             }
         ]
     },
+    externals: {
+        lodash: {
+            commonjs: 'lodash',
+            amd: 'lodash',
+            root: '_'
+        }
+    },
     mode: 'development'
 };
